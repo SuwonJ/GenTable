@@ -2,18 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
-from types import MappingProxyType
 from typing import Mapping
 
 from src.domain.academic import AcademicTarget, normalize_wildcard
 
-
-class DayOfWeek(StrEnum):
-    MONDAY = "월"
-    TUESDAY = "화"
-    WEDNESDAY = "수"
-    THURSDAY = "목"
-    FRIDAY = "금"
+DAY_ORDER = ["월", "화", "수", "목", "금"]
+DAY_MAP = {day: i for i, day in enumerate(DAY_ORDER)}
 
 
 class CourseCategory(StrEnum):
@@ -24,13 +18,9 @@ class CourseCategory(StrEnum):
     OTHER = "other"
 
 
-class DomainError(Exception):
-    """시간표 도메인 처리 중 발생하는 기본 예외."""
-
-
 @dataclass(frozen=True)
 class TimeSlot:
-    day: DayOfWeek | str
+    day: str
     start_minute: int
     end_minute: int
     location: str = ""
@@ -138,4 +128,4 @@ class Schedule:
         return Schedule(self.lectures + (lecture,))
 
     def raw_courses(self) -> list[dict]:
-        return [dict(lecture.raw) if not isinstance(lecture.raw, MappingProxyType) else dict(lecture.raw) for lecture in self.lectures]
+        return [dict(lecture.raw) for lecture in self.lectures]

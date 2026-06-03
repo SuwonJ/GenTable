@@ -15,8 +15,7 @@ ALIASES = {
 }
 
 
-DAY_ORDER = ["월", "화", "수", "목", "금"]
-DAY_MAP = {day: index for index, day in enumerate(DAY_ORDER)}
+from src.domain.models import DAY_ORDER, DAY_MAP
 
 
 def normalize_department_name(value: str) -> str:

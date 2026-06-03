@@ -1,17 +1,12 @@
 from __future__ import annotations
 
-import re
 import io
 from pathlib import Path
 
 import pandas as pd
 from openpyxl import load_workbook
 
-from src.ingestion import build_time_mask, extract_credits, extract_grades, parse_meetings, to_minutes
-
-
-DAY_ORDER = ["월", "화", "수", "목", "금"]
-DAY_MAP = {day: index for index, day in enumerate(DAY_ORDER)}
+from src.ingestion import build_time_mask, extract_credits, extract_grades, parse_meetings
 
 
 def load_catalog(table_dir: Path) -> dict:

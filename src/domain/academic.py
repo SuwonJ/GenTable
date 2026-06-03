@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 @dataclass(frozen=True)
 class AcademicTarget:
     raw: str
@@ -24,6 +24,7 @@ class AcademicTarget:
         
         # 학년 제한이 있으면 정규화된 학년 이름으로 비교한다.
         if grade and self.grades:
+            from src.filters import normalize_target_grade
             normalized_grade = normalize_target_grade(grade)
             if "전체학년" not in self.raw and normalized_grade not in self.grades:
                 # 추출 결과가 부족한 경우 원문 포함 여부로 한 번 더 확인한다.
@@ -72,13 +73,6 @@ class AcademicTarget:
             open_to_all=is_open_department_target(raw_text)
         )
 
-
-def normalize_target_grade(value: str) -> str:
-    text = str(value).strip()
-    if text in {"1", "2", "3", "4"}:
-        # 화면의 숫자 학년값을 수강대상 원문 표기와 같은 형태로 바꾼다.
-        return f"{text}학년"
-    return text
 
 
 def normalize_wildcard(value: str | None) -> str | None:

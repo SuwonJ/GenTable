@@ -18,7 +18,7 @@ from src.filters import (
 )
 
 
-DAY_ORDER = ["월", "화", "수", "목", "금"]
+from src.domain.models import DAY_ORDER
 TOP_N_MIN = 3
 TOP_N_MAX = 30
 

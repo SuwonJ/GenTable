@@ -27,7 +27,6 @@ def generate_timetables(
     alternative_groups: list[set[str]] | None,
     min_credits: int,
     max_credits: int,
-    elective_count: int,
     top_n: int,
     weights: dict,
     filter_state: dict | None,
@@ -125,9 +124,7 @@ def generate_timetables(
         required_lecture_ids=available_preferred_ids,
         required_subject_names=frozenset(adjusted_required),
         excluded_lecture_ids=frozenset(excluded_ids),
-        candidate_lecture_ids=frozenset(candidate_ids),
         alternative_groups=tuple(frozenset(group) for group in alternative_groups),
-        weights=weights,
         enforce_profile_eligibility=True,
     )
     request = ScheduleRequest(

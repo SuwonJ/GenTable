@@ -7,9 +7,8 @@ import streamlit as st
 
 from src.data_loader import load_catalog, process_files
 from src.services.scheduler_service import generate_timetables
-from src.services.filler_service import recommend_fillers
-from src.services.tagging_service import ensure_tags, get_all_unique_tags, load_tag_cache
-from src.services.criteria_service import parse_criterion, CustomCriterion, CRITERION_TYPES
+from src.services.tagging_service import ensure_tags, get_all_unique_tags
+from src.services.criteria_service import parse_criterion
 from src.services.clustering_service import find_similar_courses
 from src.presentation.dataframe_exporter import timetable_to_frame
 from src.presentation.ui_state import (
@@ -20,9 +19,7 @@ from src.presentation.ui_state import (
     add_to_group,
     add_group,
     alternative_group_sets,
-    apply_selection_from_widget,
     clear_group,
-    current_selection_value,
     delete_group,
     ensure_state,
     export_config,
@@ -40,11 +37,8 @@ from src.presentation.ui_state import (
     render_course_meta,
     render_pills,
     render_timetable,
-    reset_all_buckets,
     result_frame,
     search_courses,
-    selection_label,
-    selection_options,
     selection_status_meta,
     sync_group_name,
     target_badges,
@@ -363,7 +357,6 @@ def generate_and_store_timetables(
         alternative_groups=alternative_group_sets(),
         min_credits=controls["min_credits"],
         max_credits=controls["max_credits"],
-        elective_count=controls["elective_count"],
         top_n=controls["top_n"],
         weights=controls["weights"],
         filter_state=generation_filter_state(controls),
@@ -392,9 +385,7 @@ def render_results_tab(catalog: dict, controls: dict) -> None:
         c4, c5 = st.columns(2)
         controls["min_credits"] = c4.slider("최소 학점", 0, 21, controls["min_credits"])
         controls["max_credits"] = c5.slider("최대 학점", 6, 24, controls["max_credits"])
-        c6, c7 = st.columns(2)
-        controls["elective_count"] = c6.slider("추가 추천 최대 과목 수", 0, 4, controls["elective_count"])
-        controls["top_n"] = c7.slider("보여줄 후보 개수", TOP_N_MIN, TOP_N_MAX, controls["top_n"])
+        controls["top_n"] = st.slider("보여줄 후보 개수", TOP_N_MIN, TOP_N_MAX, controls["top_n"])
         c8, c9 = st.columns(2)
         controls["include_regex"] = c8.text_input("추가 포함 정규식", controls["include_regex"])
         controls["exclude_regex"] = c9.text_input("추가 제외 정규식", controls["exclude_regex"])
@@ -521,386 +512,30 @@ def main() -> None:
     exclude_icon = get_svg_as_data_uri("assets/exclude.svg", "#a75434")
     search_icon = get_svg_as_data_uri("assets/search.svg")
 
-    st.markdown(
-        f"""
-        <style>
-        :root {{
-            --brand: #ff8a65;
-            --brand-strong: #ff7a4f;
-            --brand-soft: #ffe5d7;
-            --brand-soft-2: #fff1e9;
-            --text-main: #1f2a33;
-            --text-sub: #6b7b88;
-            --card-border: rgba(255, 138, 101, 0.24);
-            --card-shadow: 0 12px 28px rgba(245, 178, 147, 0.2);
-        }}
-        html, body, [data-testid="stApp"] {{
-            background: linear-gradient(180deg, #f8e6d8 0%, #fff0e6 45%, #ffffff 100%);
-        }}
-        [data-testid="stAppViewContainer"] {{
-            background: transparent;
-        }}
-        [data-testid="stHeader"] {{
-            background: transparent;
-        }}
-        section[data-testid="stMain"] > div.block-container {{
-            max-width: 1160px;
-            padding: 2.2rem 2.4rem 2.6rem;
-            margin-top: 1.2rem;
-            background: #ffffff;
-            border-radius: 28px;
-            box-shadow: var(--card-shadow);
-        }}
-        @media (max-width: 1100px) {{
-            section[data-testid="stMain"] > div.block-container {{
-                padding: 1.6rem 1.4rem 2rem;
-                border-radius: 20px;
-            }}
-        }}
-
-        /* Logo styling: remove border radius */
-        [data-testid="stImage"] img {{
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }}
-
-        /* Nuclear approach to strip backgrounds for Search Bar */
-        div[data-testid="stTextInput"]:has(input[aria-label="통합 검색"]) {{
-            background: transparent !important;
-            overflow: visible !important;
-        }}
-        div[data-testid="stTextInput"]:has(input[aria-label="통합 검색"]) > div > div {{
-            background: transparent !important;
-            border: none !important;
-        }}
-        div[data-testid="stTextInput"]:has(input[aria-label="통합 검색"]) div[data-testid="stTextInputRootElement"] {{
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            min-height: 62px !important;
-            height: 62px !important;
-            display: flex !important;
-            align-items: center !important;
-        }}
-        input[aria-label="통합 검색"] {{
-            height: 62px !important;
-            border-radius: 999px !important;
-            border: 1px solid var(--brand) !important;
-            padding-left: 3.2rem !important;
-            padding-right: 1.5rem !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            background-color: #ffffff !important;
-            box-shadow: 0 12px 22px rgba(250, 186, 155, 0.25) !important;
-            background-image: url("{search_icon}");
-            background-repeat: no-repeat !important;
-            background-position: 1.1rem center !important;
-            background-size: 1.3rem !important;
-            font-size: 1.1rem !important;
-            line-height: 62px !important;
-            box-sizing: border-box !important;
-        }}
-
-        .icon-marker {{ display: none; }}
-
-        div[data-testid="stElementContainer"]:has(.basket-marker) + div[data-testid="stElementContainer"] button,
-        div.stElementContainer:has(.basket-marker) + div.stElementContainer button {{
-            background-image: url("{basket_icon}") !important;
-        }}
-        div[data-testid="stElementContainer"]:has(.wish-marker) + div[data-testid="stElementContainer"] button,
-        div.stElementContainer:has(.wish-marker) + div.stElementContainer button {{
-            background-image: url("{wish_icon}") !important;
-        }}
-        div[data-testid="stElementContainer"]:has(.exclude-marker) + div[data-testid="stElementContainer"] button,
-        div.stElementContainer:has(.exclude-marker) + div.stElementContainer button {{
-            background-image: url("{exclude_icon}") !important;
-        }}
-        div[data-testid="stElementContainer"]:has(.basket-marker) + div[data-testid="stElementContainer"] button,
-        div[data-testid="stElementContainer"]:has(.wish-marker) + div[data-testid="stElementContainer"] button,
-        div[data-testid="stElementContainer"]:has(.exclude-marker) + div[data-testid="stElementContainer"] button,
-        div.stElementContainer:has(.basket-marker) + div.stElementContainer button,
-        div.stElementContainer:has(.wish-marker) + div.stElementContainer button,
-        div.stElementContainer:has(.exclude-marker) + div.stElementContainer button {{
-            background-repeat: no-repeat !important;
-            background-position: center !important;
-            background-size: 20px 20px !important;
-            color: transparent !important;
-            font-size: 0 !important;
-            text-shadow: none !important;
-            min-height: 38px !important;
-            padding: 0.45rem 0 !important;
-        }}
-        div[data-testid="stElementContainer"]:has(.basket-marker) + div[data-testid="stElementContainer"] button *,
-        div[data-testid="stElementContainer"]:has(.wish-marker) + div[data-testid="stElementContainer"] button *,
-        div[data-testid="stElementContainer"]:has(.exclude-marker) + div[data-testid="stElementContainer"] button *,
-        div.stElementContainer:has(.basket-marker) + div.stElementContainer button *,
-        div.stElementContainer:has(.wish-marker) + div.stElementContainer button *,
-        div.stElementContainer:has(.exclude-marker) + div.stElementContainer button * {{
-            color: transparent !important;
-            font-size: 0 !important;
-            line-height: 0 !important;
-        }}
-
-        input[aria-label="통합 검색"]::placeholder {{
-            color: #b09a8f !important;
-        }}
-
-        /* General Input Styling (Selectbox, MultiSelect, TextInput) */
-        .stSelectbox div[data-baseweb="select"] > div,
-        .stMultiSelect div[data-baseweb="select"] > div,
-        div[data-testid="stTextInput"] input:not([aria-label="통합 검색"]) {{
-            border-radius: 12px !important;
-            border: 1px solid rgba(255, 138, 101, 0.3) !important;
-            background-color: #fffaf8 !important;
-            min-height: 42px !important;
-        }}
-
-        /* Enhanced Card Styling for Containers */
-        div[data-testid="stVerticalBlockBorderWrapper"] {{
-            border: 1px solid var(--card-border) !important;
-            border-radius: 20px !important;
-            background-color: #ffffff !important;
-            box-shadow: 0 4px 15px rgba(255, 138, 101, 0.05) !important;
-            padding: 2px !important;
-        }}
-        div[data-testid="stVerticalBlockBorderWrapper"] > div {{
-            padding: 1.2rem !important;
-        }}
-        
-        .stButton > button {{
-            border-radius: 999px;
-            font-weight: 600;
-            border: 1px solid rgba(255, 138, 101, 0.35);
-            background-color: #fff4ee;
-            color: #a75434;
-        }}
-        .stButton > button[kind="primary"] {{
-            background-color: var(--brand);
-            color: #ffffff;
-            border-color: var(--brand-strong);
-        }}
-        .stButton > button:hover {{
-            border-color: var(--brand-strong);
-        }}
-
-        .timetable-grid {{
-            display: grid;
-            grid-template-columns: 4.2rem repeat(5, minmax(7.5rem, 1fr));
-            gap: 0.28rem;
-            margin: 0.8rem 0 1rem;
-            overflow-x: auto;
-        }}
-        .time-corner, .day-header, .time-label, .time-cell, .lecture-square {{
-            border-radius: 0.45rem;
-        }}
-        .time-corner, .day-header {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #263445;
-            color: #ffffff;
-            font-size: 0.78rem;
-            font-weight: 700;
-        }}
-        .time-label {{
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            padding: 0.15rem 0.35rem 0 0;
-            color: #596a78;
-            font-size: 0.72rem;
-            font-weight: 600;
-        }}
-        .time-cell {{
-            min-height: 2.15rem;
-            background: #f8fafc;
-            border: 1px solid #edf1f4;
-        }}
-        .lecture-square {{
-            z-index: 2;
-            min-height: 2.15rem;
-            padding: 0.45rem 0.5rem;
-            border: 1px solid rgba(20, 38, 52, 0.18);
-            box-shadow: 0 1px 2px rgba(20, 38, 52, 0.08);
-            color: #142634;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            gap: 0.12rem;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }}
-        .lecture-square:hover {{
-            box-shadow: 0 4px 8px rgba(20, 38, 52, 0.12), 0 1px 3px rgba(20, 38, 52, 0.08);
-            border-color: rgba(20, 38, 52, 0.3);
-            transform: translateY(-1px);
-        }}
-        .lecture-square strong {{
-            display: block;
-            font-size: 0.76rem;
-            font-weight: 700;
-            line-height: 1.25;
-            margin-bottom: 0.08rem;
-            word-break: break-all;
-            padding-right: 0.9rem;
-        }}
-        .lecture-square span {{
-            display: block;
-            font-size: 0.68rem;
-            color: rgba(20, 38, 52, 0.78);
-            line-height: 1.2;
-            word-break: break-all;
-        }}
-        .lecture-square small {{
-            display: block;
-            font-size: 0.62rem;
-            color: rgba(20, 38, 52, 0.6);
-            line-height: 1.2;
-            word-break: break-all;
-            margin-top: 0.08rem;
-        }}
-        .lecture-delete-btn {{
-            position: absolute !important;
-            top: 0.25rem !important;
-            right: 0.25rem !important;
-            width: 1.1rem !important;
-            height: 1.1rem !important;
-            border-radius: 50% !important;
-            background-color: #ffffff !important;
-            border: 1px solid rgba(255, 138, 101, 0.65) !important;
-            color: #a75434 !important;
-            font-size: 0.65rem !important;
-            line-height: 1.1rem !important;
-            text-align: center !important;
-            text-decoration: none !important;
-            font-weight: bold !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            cursor: pointer !important;
-            z-index: 10 !important;
-            transition: all 0.2s ease !important;
-        }}
-        .lecture-delete-btn:hover {{
-            background-color: #fdeaea !important;
-            color: #8b2f2f !important;
-            border-color: #e8b0b0 !important;
-        }}
-        div[class*="st-key-remove_course_"] {{
-            position: absolute !important;
-            opacity: 0 !important;
-            width: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-        }}
-
-        /* Missing Styles */
-        mark {{
-            background-color: #ffe08a;
-            padding: 0.05rem 0.2rem;
-            border-radius: 0.25rem;
-        }}
-        .pill {{
-            display: inline-block;
-            margin: 0.12rem 0.28rem 0.12rem 0;
-            padding: 0.14rem 0.5rem;
-            border-radius: 999px;
-            background: #f7f9fb;
-            color: #22384a;
-            border: 1px solid #d7e0e8;
-            font-size: 0.8rem;
-            line-height: 1.2;
-            font-weight: 500;
-        }}
-        .pill.highlight {{
-            background: #e8f1fb;
-            color: #12344d;
-            border-color: #8fb3d9;
-            font-weight: 600;
-        }}
-        .status-chip {{
-            display: inline-block;
-            margin-bottom: 0.45rem;
-            padding: 0.2rem 0.55rem;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            border: 1px solid transparent;
-        }}
-        .status-none {{
-            background: #f4f6f8;
-            color: #5a6b79;
-            border-color: #d9e1e8;
-        }}
-        .status-basket {{
-            background: #e9f7ef;
-            color: #15603f;
-            border-color: #9fd2b7;
-        }}
-        .status-group {{
-            background: #eef0fb;
-            color: #3046a1;
-            border-color: #bcc5ee;
-        }}
-        .status-wish {{
-            background: #fff3d9;
-            color: #8a5b00;
-            border-color: #efcf88;
-        }}
-        .status-exclude {{
-            background: #fdeaea;
-            color: #8b2f2f;
-            border-color: #e8b0b0;
-        }}
-        .meta-box {{
-            padding: 0.32rem 0.48rem;
-            border-radius: 0.7rem;
-            background: #f7f9fb;
-            border: 1px solid #dde5ec;
-        }}
-        .meta-label {{
-            display: block;
-            font-size: 0.68rem;
-            color: #587083;
-            margin-bottom: 0.1rem;
-        }}
-        .meta-value {{
-            display: block;
-            font-size: 0.82rem;
-            color: #142634;
-            font-weight: 600;
-            word-break: break-word;
-            line-height: 1.25;
-        }}
-
-        /* Fix for Streamlit's new container borders */
-        div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"] {{
-            gap: 0rem !important;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    css_path = Path(__file__).parent / "assets" / "style.css"
+    if css_path.exists():
+        css_content = css_path.read_text(encoding="utf-8")
+        css_content = css_content.replace("{search_icon}", search_icon)
+        css_content = css_content.replace("{basket_icon}", basket_icon)
+        css_content = css_content.replace("{wish_icon}", wish_icon)
+        css_content = css_content.replace("{exclude_icon}", exclude_icon)
+        st.markdown(f"<style>\n{css_content}\n</style>", unsafe_allow_html=True)
     ensure_state()
 
-    # ─── API 키 (우선순위: st.secrets -> os.environ -> 하드코딩) ───
+    # ─── API 키 (우선순위: st.secrets -> os.environ) ───
     GEMINI_API_KEY = ""
-    if "GEMINI_API_KEY" in st.secrets:
-        GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+    try:
+        if "GEMINI_API_KEY" in st.secrets:
+            GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        pass
+        
     if not GEMINI_API_KEY:
         GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-    if not GEMINI_API_KEY:
-        GEMINI_API_KEY = "AIzaSyB5d91JJADvs59g06EZl_z0hHiu5pI5-og"
     st.session_state["gemini_api_key"] = GEMINI_API_KEY
 
     # 사이드바 레이아웃
     with st.sidebar:
-        #st.header("GenTable")
-        #st.caption("강의 정보를 요약하고 시간표를 생성합니다.")
-        #st.divider()
-        
         with st.container():
             r1, r2 = st.columns(2)
             r1.metric("개설 강의", len(st.session_state.catalog["courses"]) if "catalog" in st.session_state else 0)

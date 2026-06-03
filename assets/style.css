@@ -1,0 +1,355 @@
+:root {
+    --brand: #ff8a65;
+    --brand-strong: #ff7a4f;
+    --brand-soft: #ffe5d7;
+    --brand-soft-2: #fff1e9;
+    --text-main: #1f2a33;
+    --text-sub: #6b7b88;
+    --card-border: rgba(255, 138, 101, 0.24);
+    --card-shadow: 0 12px 28px rgba(245, 178, 147, 0.2);
+}
+html, body, [data-testid="stApp"] {
+    background: linear-gradient(180deg, #f8e6d8 0%, #fff0e6 45%, #ffffff 100%);
+}
+[data-testid="stAppViewContainer"] {
+    background: transparent;
+}
+[data-testid="stHeader"] {
+    background: transparent;
+}
+section[data-testid="stMain"] > div.block-container {
+    max-width: 1160px;
+    padding: 2.2rem 2.4rem 2.6rem;
+    margin-top: 1.2rem;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: var(--card-shadow);
+}
+@media (max-width: 1100px) {
+    section[data-testid="stMain"] > div.block-container {
+        padding: 1.6rem 1.4rem 2rem;
+        border-radius: 20px;
+    }
+}
+
+/* Logo styling: remove border radius */
+[data-testid="stImage"] img {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Nuclear approach to strip backgrounds for Search Bar */
+div[data-testid="stTextInput"]:has(input[aria-label="통합 검색"]) {
+    background: transparent !important;
+    overflow: visible !important;
+}
+div[data-testid="stTextInput"]:has(input[aria-label="통합 검색"]) > div > div {
+    background: transparent !important;
+    border: none !important;
+}
+div[data-testid="stTextInput"]:has(input[aria-label="통합 검색"]) div[data-testid="stTextInputRootElement"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    min-height: 62px !important;
+    height: 62px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+input[aria-label="통합 검색"] {
+    height: 62px !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--brand) !important;
+    padding-left: 3.2rem !important;
+    padding-right: 1.5rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 12px 22px rgba(250, 186, 155, 0.25) !important;
+    background-image: url("{search_icon}");
+    background-repeat: no-repeat !important;
+    background-position: 1.1rem center !important;
+    background-size: 1.3rem !important;
+    font-size: 1.1rem !important;
+    line-height: 62px !important;
+    box-sizing: border-box !important;
+}
+
+.icon-marker { display: none; }
+
+div[data-testid="stElementContainer"]:has(.basket-marker) + div[data-testid="stElementContainer"] button,
+div.stElementContainer:has(.basket-marker) + div.stElementContainer button {
+    background-image: url("{basket_icon}") !important;
+}
+div[data-testid="stElementContainer"]:has(.wish-marker) + div[data-testid="stElementContainer"] button,
+div.stElementContainer:has(.wish-marker) + div.stElementContainer button {
+    background-image: url("{wish_icon}") !important;
+}
+div[data-testid="stElementContainer"]:has(.exclude-marker) + div[data-testid="stElementContainer"] button,
+div.stElementContainer:has(.exclude-marker) + div.stElementContainer button {
+    background-image: url("{exclude_icon}") !important;
+}
+div[data-testid="stElementContainer"]:has(.basket-marker) + div[data-testid="stElementContainer"] button,
+div[data-testid="stElementContainer"]:has(.wish-marker) + div[data-testid="stElementContainer"] button,
+div[data-testid="stElementContainer"]:has(.exclude-marker) + div[data-testid="stElementContainer"] button,
+div.stElementContainer:has(.basket-marker) + div.stElementContainer button,
+div.stElementContainer:has(.wish-marker) + div.stElementContainer button,
+div.stElementContainer:has(.exclude-marker) + div.stElementContainer button {
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 20px 20px !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    text-shadow: none !important;
+    min-height: 38px !important;
+    padding: 0.45rem 0 !important;
+}
+div[data-testid="stElementContainer"]:has(.basket-marker) + div[data-testid="stElementContainer"] button *,
+div[data-testid="stElementContainer"]:has(.wish-marker) + div[data-testid="stElementContainer"] button *,
+div[data-testid="stElementContainer"]:has(.exclude-marker) + div[data-testid="stElementContainer"] button *,
+div.stElementContainer:has(.basket-marker) + div.stElementContainer button *,
+div.stElementContainer:has(.wish-marker) + div.stElementContainer button *,
+div.stElementContainer:has(.exclude-marker) + div.stElementContainer button * {
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+
+input[aria-label="통합 검색"]::placeholder {
+    color: #b09a8f !important;
+}
+
+/* General Input Styling (Selectbox, MultiSelect, TextInput) */
+.stSelectbox div[data-baseweb="select"] > div,
+.stMultiSelect div[data-baseweb="select"] > div,
+div[data-testid="stTextInput"] input:not([aria-label="통합 검색"]) {
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 138, 101, 0.3) !important;
+    background-color: #fffaf8 !important;
+    min-height: 42px !important;
+}
+
+/* Enhanced Card Styling for Containers */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(255, 138, 101, 0.05) !important;
+    padding: 2px !important;
+}
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: 1.2rem !important;
+}
+
+.stButton > button {
+    border-radius: 999px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 138, 101, 0.35);
+    background-color: #fff4ee;
+    color: #a75434;
+}
+.stButton > button[kind="primary"] {
+    background-color: var(--brand);
+    color: #ffffff;
+    border-color: var(--brand-strong);
+}
+.stButton > button:hover {
+    border-color: var(--brand-strong);
+}
+
+.timetable-grid {
+    display: grid;
+    grid-template-columns: 4.2rem repeat(5, minmax(7.5rem, 1fr));
+    gap: 0.28rem;
+    margin: 0.8rem 0 1rem;
+    overflow-x: auto;
+}
+.time-corner, .day-header, .time-label, .time-cell, .lecture-square {
+    border-radius: 0.45rem;
+}
+.time-corner, .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #263445;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+.time-label {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 0.15rem 0.35rem 0 0;
+    color: #596a78;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+.time-cell {
+    min-height: 2.15rem;
+    background: #f8fafc;
+    border: 1px solid #edf1f4;
+}
+.lecture-square {
+    z-index: 2;
+    min-height: 2.15rem;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid rgba(20, 38, 52, 0.18);
+    box-shadow: 0 1px 2px rgba(20, 38, 52, 0.08);
+    color: #142634;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.12rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lecture-square:hover {
+    box-shadow: 0 4px 8px rgba(20, 38, 52, 0.12), 0 1px 3px rgba(20, 38, 52, 0.08);
+    border-color: rgba(20, 38, 52, 0.3);
+    transform: translateY(-1px);
+}
+.lecture-square strong {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.08rem;
+    word-break: break-all;
+    padding-right: 0.9rem;
+}
+.lecture-square span {
+    display: block;
+    font-size: 0.68rem;
+    color: rgba(20, 38, 52, 0.78);
+    line-height: 1.2;
+    word-break: break-all;
+}
+.lecture-square small {
+    display: block;
+    font-size: 0.62rem;
+    color: rgba(20, 38, 52, 0.6);
+    line-height: 1.2;
+    word-break: break-all;
+    margin-top: 0.08rem;
+}
+.lecture-delete-btn {
+    position: absolute !important;
+    top: 0.25rem !important;
+    right: 0.25rem !important;
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+    border-radius: 50% !important;
+    background-color: #ffffff !important;
+    border: 1px solid rgba(255, 138, 101, 0.65) !important;
+    color: #a75434 !important;
+    font-size: 0.65rem !important;
+    line-height: 1.1rem !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    transition: all 0.2s ease !important;
+}
+.lecture-delete-btn:hover {
+    background-color: #fdeaea !important;
+    color: #8b2f2f !important;
+    border-color: #e8b0b0 !important;
+}
+div[class*="st-key-remove_course_"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Missing Styles */
+mark {
+    background-color: #ffe08a;
+    padding: 0.05rem 0.2rem;
+    border-radius: 0.25rem;
+}
+.pill {
+    display: inline-block;
+    margin: 0.12rem 0.28rem 0.12rem 0;
+    padding: 0.14rem 0.5rem;
+    border-radius: 999px;
+    background: #f7f9fb;
+    color: #22384a;
+    border: 1px solid #d7e0e8;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    font-weight: 500;
+}
+.pill.highlight {
+    background: #e8f1fb;
+    color: #12344d;
+    border-color: #8fb3d9;
+    font-weight: 600;
+}
+.status-chip {
+    display: inline-block;
+    margin-bottom: 0.45rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+.status-none {
+    background: #f4f6f8;
+    color: #5a6b79;
+    border-color: #d9e1e8;
+}
+.status-basket {
+    background: #e9f7ef;
+    color: #15603f;
+    border-color: #9fd2b7;
+}
+.status-group {
+    background: #eef0fb;
+    color: #3046a1;
+    border-color: #bcc5ee;
+}
+.status-wish {
+    background: #fff3d9;
+    color: #8a5b00;
+    border-color: #efcf88;
+}
+.status-exclude {
+    background: #fdeaea;
+    color: #8b2f2f;
+    border-color: #e8b0b0;
+}
+.meta-box {
+    padding: 0.32rem 0.48rem;
+    border-radius: 0.7rem;
+    background: #f7f9fb;
+    border: 1px solid #dde5ec;
+}
+.meta-label {
+    display: block;
+    font-size: 0.68rem;
+    color: #587083;
+    margin-bottom: 0.1rem;
+}
+.meta-value {
+    display: block;
+    font-size: 0.82rem;
+    color: #142634;
+    font-weight: 600;
+    word-break: break-word;
+    line-height: 1.25;
+}
+
+/* Fix for Streamlit's new container borders */
+div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"] {
+    gap: 0rem !important;
+}

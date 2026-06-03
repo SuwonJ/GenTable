@@ -6,16 +6,12 @@
 
 from __future__ import annotations
 
-import json
 import logging
-import re
 from dataclasses import asdict, dataclass
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
 # Data Model
-# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class CustomCriterion:
@@ -53,47 +49,19 @@ class CustomCriterion:
         )
 
 
-# ---------------------------------------------------------------------------
 # 기준 타입 정의
-# ---------------------------------------------------------------------------
 
 CRITERION_TYPES = {
-    "free_time_block": {
-        "description": "특정 시간대를 비워둠",
-        "icon": "🕐",
-        "params": ["days", "start", "end"],
-    },
-    "avoid_time_range": {
-        "description": "특정 시간대 수업 회피",
-        "icon": "🚫",
-        "params": ["days", "start", "end"],
-    },
-    "prefer_time_range": {
-        "description": "특정 시간대에만 수업 선호",
-        "icon": "⏰",
-        "params": ["days", "start", "end"],
-    },
-    "max_consecutive": {
-        "description": "연강 시간 제한",
-        "icon": "⏱️",
-        "params": ["max_minutes"],
-    },
-    "penalize_tag": {
-        "description": "특정 태그 과목 회피",
-        "icon": "👎",
-        "params": ["tag"],
-    },
-    "boost_tag": {
-        "description": "특정 태그 과목 선호",
-        "icon": "👍",
-        "params": ["tag"],
-    },
+    "free_time_block": {"icon": "🕐"},
+    "avoid_time_range": {"icon": "🚫"},
+    "prefer_time_range": {"icon": "⏰"},
+    "max_consecutive": {"icon": "⏱️"},
+    "penalize_tag": {"icon": "👎"},
+    "boost_tag": {"icon": "👍"},
 }
 
 
-# ---------------------------------------------------------------------------
 # LLM 파싱
-# ---------------------------------------------------------------------------
 
 _PARSE_PROMPT = """\
 당신은 대학 시간표 생성기의 기준 파서입니다.
@@ -153,10 +121,7 @@ _PARSE_PROMPT = """\
 """
 
 
-def _extract_json(text: str) -> dict:
-    """LLM 응답에서 JSON 추출."""
-    cleaned = re.sub(r"```(?:json)?\s*", "", text).strip()
-    return json.loads(cleaned)
+from src.services.tagging_service import _extract_json
 
 
 def parse_criterion(
@@ -228,14 +193,9 @@ def parse_criterion(
     )
 
 
-# ---------------------------------------------------------------------------
 # 기준 평가
-# ---------------------------------------------------------------------------
 
-def _time_to_minutes(time_str: str) -> int:
-    """HH:MM 문자열을 분 단위 정수로 변환."""
-    parts = time_str.split(":")
-    return int(parts[0]) * 60 + int(parts[1])
+from src.ingestion import to_minutes as _time_to_minutes
 
 
 def _get_daily_slots(courses: list[dict]) -> dict[str, list[dict]]:

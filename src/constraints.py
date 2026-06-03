@@ -122,7 +122,7 @@ class StudentEligibilityConstraint:
 
 @dataclass(frozen=True)
 class ConstraintSet:
-    hard_constraints: tuple[object, ...]
+    hard_constraints: tuple[HardConstraint, ...]
 
 
 class ConstraintRegistry:
@@ -135,14 +135,11 @@ class ConstraintRegistry:
         required_lecture_ids: frozenset[str],
         required_subject_names: frozenset[str],
         excluded_lecture_ids: frozenset[str],
-        candidate_lecture_ids: frozenset[str] = frozenset(),
         alternative_groups: tuple[frozenset[str], ...] = (),
-        weights: dict | None = None,
         enforce_profile_eligibility: bool = True,
     ) -> ConstraintSet:
-        weights = weights or {}
         # 모든 요청에 공통으로 필요한 강제 제약을 먼저 구성한다.
-        hard: list[object] = [
+        hard: list[HardConstraint] = [
             NoTimeConflictConstraint(),
             NoDuplicateSubjectConstraint(),
             CreditRangeConstraint(min_credits=min_credits, max_credits=max_credits),

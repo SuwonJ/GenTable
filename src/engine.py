@@ -9,8 +9,7 @@ from src.catalog.catalog import LectureCatalog
 from src.domain.models import Lecture, Schedule, StudentProfile
 
 
-DAY_ORDER = ["월", "화", "수", "목", "금"]
-
+from src.domain.models import DAY_ORDER
 
 def _daily_earliest_starts(courses: list[dict]) -> dict[str, int]:
     daily_min: dict[str, int] = {}
@@ -247,7 +246,6 @@ class SearchStats:
 
 @dataclass(frozen=True)
 class ScheduleResult:
-    schedules: tuple[Schedule, ...]
     scored_candidates: tuple[dict, ...]
     stats: SearchStats
     warnings: tuple[str, ...] = ()
@@ -320,7 +318,7 @@ class BacktrackingScheduleEngine:
         if unsatisfied_required:
             # 필수 과목 분반이 하나도 없으면 선택 과목 탐색을 시작하지 않는다.
             warnings.append("필수 과목 분반 선택 단계에서 막혀 시간표를 만들지 못했습니다.")
-            return ScheduleResult((), (), SearchStats(), tuple(warnings))
+            return ScheduleResult((), SearchStats(), tuple(warnings))
 
         # 분반 수가 적은 필수 과목부터 골라 백트래킹 가지 수를 줄인다.
         required_names_ordered = sorted(required_choice_names, key=lambda name: len(required_options[name]))
@@ -405,7 +403,6 @@ class BacktrackingScheduleEngine:
                     return
 
         def search_required(index: int, schedule: Schedule) -> None:
-            nonlocal search_limit_hit
             if schedule.credits > request.max_credits:
                 return
             if index == len(required_names_ordered):
@@ -434,9 +431,7 @@ class BacktrackingScheduleEngine:
         if search_limit_hit:
             warnings.append("탐색 상태 제한에 도달해 일부 조합을 확인하지 못했습니다.")
 
-        schedules = tuple(Schedule(tuple()) for _ in scored_candidates)
         return ScheduleResult(
-            schedules=schedules,
             scored_candidates=tuple(scored_candidates),
             stats=SearchStats(
                 explored_states=explored_states,

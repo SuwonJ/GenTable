@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-DAY_ORDER = ["월", "화", "수", "목", "금"]
+from src.domain.models import DAY_ORDER
 
 
 def timetable_to_frame(courses: list[dict]):

@@ -3,6 +3,6 @@
 # 수강대상 객체는 모델 내부에서 연결되어 수강 가능 여부 판정에 사용된다.
 # 공개 목록은 다른 계층이 의존해도 되는 모델 범위를 제한한다.
 # 도메인 모델은 화면 상태에 직접 의존하지 않는다.
-from src.domain.models import CourseCategory, DayOfWeek, DomainError, Lecture, Schedule, StudentProfile, Subject, TimeSlot
+from src.domain.models import CourseCategory, Lecture, Schedule, StudentProfile, Subject, TimeSlot
 
-__all__ = ["CourseCategory", "DayOfWeek", "DomainError", "Lecture", "Schedule", "StudentProfile", "Subject", "TimeSlot"]
+__all__ = ["CourseCategory", "Lecture", "Schedule", "StudentProfile", "Subject", "TimeSlot"]

@@ -14,9 +14,7 @@ from __future__ import annotations
 from collections import defaultdict
 
 
-# ---------------------------------------------------------------------------
 # 유사도 계산
-# ---------------------------------------------------------------------------
 
 def jaccard_similarity(tags_a: set[str], tags_b: set[str]) -> float:
     """두 태그 집합의 Jaccard 유사도를 계산합니다.
@@ -66,9 +64,7 @@ def compute_similarity_matrix(
     return dict(matrix)
 
 
-# ---------------------------------------------------------------------------
 # 유사 과목 추천
-# ---------------------------------------------------------------------------
 
 def find_similar_courses(
     course_id: str,
@@ -134,9 +130,7 @@ def find_similar_courses(
     return similarities[:top_n]
 
 
-# ---------------------------------------------------------------------------
 # 스마트 그룹 추천
-# ---------------------------------------------------------------------------
 
 def suggest_alternative_groups(
     course_tags: dict[str, list[str]],
@@ -236,9 +230,7 @@ def suggest_alternative_groups(
     return groups
 
 
-# ---------------------------------------------------------------------------
 # 태그 통계
-# ---------------------------------------------------------------------------
 
 def get_tag_statistics(course_tags: dict[str, list[str]]) -> dict[str, int]:
     """태그별 과목 수 통계를 반환합니다.
