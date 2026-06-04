@@ -8,7 +8,6 @@
 /
 ├── app.py
 ├── src/
-│   ├── scheduler.py
 │   ├── services/scheduler_service.py
 │   ├── engine.py
 │   ├── constraints.py
@@ -32,7 +31,6 @@
 | 레이어 | 파일 | 역할 |
 | :--- | :--- | :--- |
 | UI | `app.py` | Streamlit 입력 수집, 서비스 호출, 탭/화면 배치 |
-| Facade (Stable API) | `src/scheduler.py` | 외부 호출용 안정적인 공개 진입점 (`generate_timetables`, `recommend_fillers`, `timetable_to_frame`) |
 | UI State/Presentation | `src/presentation/ui_state.py` | 세션 상태/버킷 조작, 검색 어댑터, 반복 렌더 보조 |
 | Service (Core Logic) | `src/services/scheduler_service.py`, `src/services/filler_service.py` | 생성/대체추천 파이프라인 조율 및 로직 수행 |
 | Engine | `src/engine.py` | `ScheduleRequest`, 백트래킹 탐색, Top-N 관리, 탐색 통계, 점수 계산 |
@@ -44,7 +42,6 @@
 
 ## 3. 최근 리팩토링 반영 규칙
 
-1. `src/scheduler.py`는 외부 호출(테스트, 다른 클라이언트 등)을 위한 공개 API 진입점을 제공합니다.
 2. 검색 규칙은 `src.filters`, 생성 제약은 `src.constraints`, 점수 계산은 `src.engine.score_candidate`에서 관리합니다.
 3. UI 상태/버킷 조작은 `src.presentation.ui_state`, 화면 배치는 `app.py`에 둡니다.
 4. Legacy dict → domain 변환과 `time_mask` 같은 파생 필드는 ingestion/service 경계에서 처리합니다.

@@ -5,7 +5,6 @@
 | 위치 | 심볼 | 역할 |
 | :--- | :--- | :--- |
 | `app.py` | `load_catalog_from_uploads()`, `render_*`, `main()` | 입력 수집 + 호출 + 화면 배치 |
-| `src/scheduler.py` | `generate_timetables()`, `recommend_fillers()`, `timetable_to_frame()` | 외부 공개용 안정적인 퍼사드 API 진입점 |
 | `src/presentation/ui_state.py` | `search_courses()`, `matches_filters()` | 검색어 + 필터 상태로 강의 목록 정렬 |
 | `src/presentation/ui_state.py` | `ensure_state()`, `update_bucket()` 등 | 세션 상태/버킷 조작 |
 | `src/presentation/ui_state.py` | `render_course_meta()`, `render_timetable()` 등 | 반복 표현/렌더 보조 |

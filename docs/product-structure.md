@@ -13,7 +13,6 @@
 
 ```text
 app.py (UI)
-  -> src/scheduler.py (stable facade)
      -> src/services/scheduler_service.py (orchestration & core logic)
         -> src/filters.py (catalog filtering)
         -> src/ingestion.py (legacy dict -> Lecture)

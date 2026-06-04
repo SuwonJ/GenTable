@@ -17,7 +17,6 @@ aitimetable/
 │   └── t2.xlsx
 ├── src/
 │   ├── __init__.py
-│   ├── scheduler.py
 │   ├── constraints.py
 │   ├── data_loader.py
 │   ├── engine.py
@@ -61,7 +60,6 @@ aitimetable/
 | 설정 예시 | `aitimetable_config.json`, `aitimetable_config2.json` |
 | 원본 데이터 | `sourcedata/` |
 | 핵심 소스 | `src/` |
-| 퍼사드/공개 진입점 | `src/scheduler.py` |
 | 조회 계층 | `src/catalog/` |
 | 도메인 계층 | `src/domain/` |
 | 화면 보조 계층 | `src/presentation/` |

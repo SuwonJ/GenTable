@@ -17,9 +17,8 @@
    - 입력 수집, 서비스 호출, 화면 배치 확인
 2. `src/presentation/ui_state.py`
    - 상태(`controls`, 버킷), 검색 어댑터, 반복 렌더 보조 확인
-3. `src/scheduler.py`
    - 외부 공개용 안정적인 퍼사드 API 진입점
-4. `src/services/scheduler_service.py`  
+3. `src/services/scheduler_service.py`  
    - 실제 생성 파이프라인 조율 및 생성 알고리즘 조율 서비스
 5. `src/services/filler_service.py`
    - 대체 강의 추천 서비스
@@ -47,4 +46,4 @@
 1. 래퍼 함수 대신 원본 모듈 직접 import 사용
 2. 검색 규칙과 생성 규칙이 서로 어긋나지 않게 유지
 3. UI 변경 시 `generate_timetables` (in `scheduler_service.py`) 인자 계약 유지
-4. 변경 후 `tests/test_scheduler_filters.py`, `tests/test_public_api_contract.py` 포함 전체 테스트 확인
+4. 변경 후 `tests/test_scheduler_filters.py` 포함 전체 테스트 확인

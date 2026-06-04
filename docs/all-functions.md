@@ -240,8 +240,6 @@
 | 심볼 | 설명 |
 | :--- | :--- |
 | `make_course(course_id, name, day, start, end)` | 해당 모듈의 핵심 동작을 수행합니다. |
-| `PublicSchedulerApiContractTests.test_scheduler_facade_exports_only_public_entrypoints(self)` | 해당 모듈의 핵심 동작을 수행합니다. |
-| `PublicSchedulerApiContractTests.test_generate_timetables_result_shape_and_ordering_contract(self)` | 해당 모듈의 핵심 동작을 수행합니다. |
 
 ## tests/test_scheduler_filters.py
 
