@@ -7,13 +7,4 @@ venv/
 .agents/
 .codex
 .pytest_cache/
-
-# presentation docs
-docs/GenTable_Presentation.html
-docs/GenTable_Presentation.pptx
-proposal_text.txt
-scratch/
-
-# Local configs and secrets
-aitimetable_config*.json
-.streamlit/secrets.toml
+.streamlit/

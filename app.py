@@ -64,7 +64,7 @@ def get_svg_as_data_uri(file_path: str, fill_color: str = None) -> str:
     return f"data:image/svg+xml,{encoded_svg}"
 
 
-TABLE_DIR = Path(__file__).parent / "tables"
+TABLE_DIR = Path(__file__).parent / "sourcedata"
 
 
 def load_catalog_from_uploads(uploaded_files: list) -> dict:
@@ -420,9 +420,22 @@ def render_results_tab(catalog: dict, controls: dict) -> None:
 
     # ─── AI 커스텀 기준 섹션 ───
     api_key = st.session_state.get("gemini_api_key", "")
-    if api_key:
-        with st.container(border=True):
-            st.markdown("#### AI 가중치 세터")
+    with st.container(border=True):
+        st.markdown("#### AI 가중치 세터")
+        if not api_key:
+            st.info("💡 **AI 가중치 세터를 사용하려면 Gemini API 키가 필요합니다.**")
+            api_key_input = st.text_input(
+                "Gemini API Key 입력",
+                value="",
+                type="password",
+                placeholder="AIzaSy...",
+                key="direct_api_key_input",
+            )
+            if st.button("API Key 적용", key="apply_direct_api_key", use_container_width=True):
+                if api_key_input.strip():
+                    st.session_state["gemini_api_key"] = api_key_input.strip()
+                    st.rerun()
+        else:
             st.caption('"점심시간 비워줘", "수학 싫어", "화목 오후에만" 같은 자연어로 기준을 입력하세요.')
             cr_col1, cr_col2 = st.columns([4, 1])
             with cr_col1:
@@ -470,9 +483,10 @@ def render_results_tab(catalog: dict, controls: dict) -> None:
                         st.rerun()
             else:
                 st.caption("아직 커스텀 기준이 없습니다. 위에서 자연어로 추가해보세요.")
-        if st.button("시간표 생성", type="primary", use_container_width=True):
-            with st.spinner("시간표 후보를 계산하고 있습니다..."):
-                generate_and_store_timetables(catalog, controls)
+
+    if st.button("시간표 생성", type="primary", use_container_width=True):
+        with st.spinner("시간표 후보를 계산하고 있습니다..."):
+            generate_and_store_timetables(catalog, controls)
 
     info = st.session_state.get("last_info")
     if info:
@@ -621,22 +635,6 @@ def main() -> None:
     with st.sidebar:
         render_summary_panel(catalog_by_id, results if query else [])
 
-        st.divider()
-        st.subheader("데이터 관리")
-        uploaded_files = st.file_uploader(
-            "강의 목록(CSV/Excel) 업로드",
-            type=["xlsx", "csv"],
-            accept_multiple_files=True,
-            help="시간표 엑셀 파일들을 업로드하세요.",
-            key="data_uploader"
-        )
-        if st.button("강의 데이터 로드", use_container_width=True, key="load_data_btn"):
-            if uploaded_files:
-                st.session_state.catalog = load_catalog_from_uploads(uploaded_files)
-                st.success(f"{len(uploaded_files)}개 파일 로드 완료")
-                st.rerun()
-            else:
-                st.warning("업로드된 파일이 없습니다.")
         with st.container(border=True):
             st.markdown("### 설정")
             c1, c2 = st.columns(2)
@@ -661,7 +659,7 @@ def main() -> None:
                             st.error(f"오류: {e}")
 
     if not catalog["courses"]:
-        st.info("사이드바 하단에서 강의 데이터를 먼저 업로드해주세요.")
+        st.info("sourcedata 폴더에 강의 데이터(Excel/CSV)가 없습니다. 파일을 넣어주세요.")
         st.stop()
 
     tabs = st.tabs(["강의 탐색", "그룹바구니", "시간표 생성"])
