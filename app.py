@@ -59,7 +59,7 @@ def get_svg_as_data_uri(file_path: str, fill_color: str = None) -> str:
             svg_content = re.sub(r'fill="[^"]+"', f'fill="{fill_color}"', svg_content)
         else:
             svg_content = svg_content.replace("<svg ", f'<svg fill="{fill_color}" ')
-    
+
     encoded_svg = urllib.parse.quote(svg_content)
     return f"data:image/svg+xml,{encoded_svg}"
 
@@ -74,7 +74,6 @@ def load_catalog_from_uploads(uploaded_files: list) -> dict:
         files.append(f)
         filenames.append(f.name)
     return process_files(files, filenames=filenames)
-
 
 
 def render_search_tab(results: list[dict], active_group: str, filter_state: dict) -> str:
@@ -136,7 +135,8 @@ def render_search_tab(results: list[dict], active_group: str, filter_state: dict
                 c1, c2, c3 = st.columns(3)
                 with c1:
                     st.markdown('<span class="icon-marker basket-marker"></span>', unsafe_allow_html=True)
-                    if st.button("장바구니", key=f"basket_{course['course_id']}", help="장바구니 (필수)", use_container_width=True, type="primary"):
+                    if st.button("장바구니", key=f"basket_{course['course_id']}", help="장바구니 (필수)",
+                                 use_container_width=True, type="primary"):
                         update_bucket(course["course_id"], "basket")
                         st.rerun()
                 with c2:
@@ -159,8 +159,8 @@ def render_search_tab(results: list[dict], active_group: str, filter_state: dict
                         key=f"group_pick_{course['course_id']}",
                         label_visibility="collapsed",
                         on_change=lambda cid=course['course_id']: (
-                            add_to_group(cid, st.session_state[f"group_pick_{cid}"]) 
-                            if st.session_state[f"group_pick_{cid}"] != "그룹 담기..." 
+                            add_to_group(cid, st.session_state[f"group_pick_{cid}"])
+                            if st.session_state[f"group_pick_{cid}"] != "그룹 담기..."
                             else None
                         )
                     )
@@ -201,7 +201,6 @@ def render_group_panel(catalog_by_id: dict[str, dict], group_key: str) -> None:
         st.dataframe(timetable_to_frame(courses), use_container_width=True, hide_index=True)
 
 
-
 def render_basket_tab(catalog_by_id: dict[str, dict]) -> None:
     st.subheader("그룹바구니")
     left, right = st.columns([1, 2])
@@ -209,10 +208,13 @@ def render_basket_tab(catalog_by_id: dict[str, dict]) -> None:
     with left:
         with st.container(border=True):
             st.markdown("#### 고정/우선 선택")
-            basket_courses = [catalog_by_id[course_id] for course_id in st.session_state.preferred_ids if course_id in catalog_by_id]
-            wish_courses = [catalog_by_id[course_id] for course_id in st.session_state.candidate_ids if course_id in catalog_by_id]
-            excluded_courses = [catalog_by_id[course_id] for course_id in st.session_state.excluded_ids if course_id in catalog_by_id]
-            
+            basket_courses = [catalog_by_id[course_id] for course_id in st.session_state.preferred_ids if
+                              course_id in catalog_by_id]
+            wish_courses = [catalog_by_id[course_id] for course_id in st.session_state.candidate_ids if
+                            course_id in catalog_by_id]
+            excluded_courses = [catalog_by_id[course_id] for course_id in st.session_state.excluded_ids if
+                                course_id in catalog_by_id]
+
             st.write(f"장바구니(필수): {len(basket_courses)}개")
             for course in basket_courses:
                 st.caption(format_course_line(course))
@@ -242,7 +244,7 @@ def render_basket_tab(catalog_by_id: dict[str, dict]) -> None:
         if st.button("새 그룹 추가", key="add_group_in_tab", use_container_width=True):
             add_group()
             st.rerun()
-            
+
         keys = group_keys()
         tabs = st.tabs([st.session_state.alternative_groups[key]["name"] for key in keys]) if keys else []
         for tab, group_key in zip(tabs, keys):
@@ -254,10 +256,13 @@ def render_summary_panel(catalog_by_id: dict[str, dict], search_results: list[di
     if not catalog_by_id and (st.session_state.preferred_ids or st.session_state.alternative_groups):
         st.warning("강의 데이터를 먼저 불러와야 합니다.")
 
-    basket_courses = [catalog_by_id[course_id] for course_id in st.session_state.preferred_ids if course_id in catalog_by_id]
-    wish_courses = [catalog_by_id[course_id] for course_id in st.session_state.candidate_ids if course_id in catalog_by_id]
-    excluded_courses = [catalog_by_id[course_id] for course_id in st.session_state.excluded_ids if course_id in catalog_by_id]
-    
+    basket_courses = [catalog_by_id[course_id] for course_id in st.session_state.preferred_ids if
+                      course_id in catalog_by_id]
+    wish_courses = [catalog_by_id[course_id] for course_id in st.session_state.candidate_ids if
+                    course_id in catalog_by_id]
+    excluded_courses = [catalog_by_id[course_id] for course_id in st.session_state.excluded_ids if
+                        course_id in catalog_by_id]
+
     with st.expander(f"장바구니 ({len(basket_courses)})", expanded=True):
         if not basket_courses:
             st.caption("비어 있음")
@@ -322,10 +327,10 @@ def render_summary_panel(catalog_by_id: dict[str, dict], search_results: list[di
 
 
 def generate_and_store_timetables(
-    catalog: dict,
-    controls: dict,
-    locked_ids: set[str] | None = None,
-    extra_excluded_ids: set[str] | None = None,
+        catalog: dict,
+        controls: dict,
+        locked_ids: set[str] | None = None,
+        extra_excluded_ids: set[str] | None = None,
 ) -> None:
     preferred_ids = set(st.session_state.preferred_ids)
     candidate_ids = set(st.session_state.candidate_ids)
@@ -370,7 +375,6 @@ def generate_and_store_timetables(
             del st.session_state[key]
 
 
-
 def render_results_tab(catalog: dict, controls: dict) -> None:
     st.subheader("시간표 생성")
     st.caption("장바구니(필수), 위시(후보), 그룹바구니를 모두 반영해 후보 시간표를 생성합니다.")
@@ -379,9 +383,11 @@ def render_results_tab(catalog: dict, controls: dict) -> None:
         if controls.get("department", "전체") not in department_options:
             controls["department"] = "전체"
         c1, c2, c3 = st.columns(3)
-        controls["grade"] = c1.selectbox("학년", ["전체", "1", "2", "3", "4"], index=["전체", "1", "2", "3", "4"].index(controls["grade"]))
+        controls["grade"] = c1.selectbox("학년", ["전체", "1", "2", "3", "4"],
+                                         index=["전체", "1", "2", "3", "4"].index(controls["grade"]))
         controls["semester"] = c2.selectbox("학기", ["전체", "1", "2"], index=["전체", "1", "2"].index(controls["semester"]))
-        controls["department"] = c3.selectbox("학과/학부", department_options, index=department_options.index(controls.get("department", "전체")))
+        controls["department"] = c3.selectbox("학과/학부", department_options,
+                                              index=department_options.index(controls.get("department", "전체")))
         c4, c5 = st.columns(2)
         controls["min_credits"] = c4.slider("최소 학점", 0, 21, controls["min_credits"])
         controls["max_credits"] = c5.slider("최대 학점", 6, 24, controls["max_credits"])
@@ -529,7 +535,7 @@ def main() -> None:
             GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
     except Exception:
         pass
-        
+
     if not GEMINI_API_KEY:
         GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
     st.session_state["gemini_api_key"] = GEMINI_API_KEY
@@ -601,7 +607,7 @@ def main() -> None:
         results = search_courses(
             catalog["courses"],
             query=query,
-            category_filters=[], # Simplified for this pass
+            category_filters=[],  # Simplified for this pass
             day_filters=day_filters,
             time_filter="전체",
             target_grades=target_grades,
